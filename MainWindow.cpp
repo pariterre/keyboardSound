@@ -36,6 +36,7 @@ MainWindow::MainWindow(QWidget *parent)
         return;
     }
     while (!file.atEnd()) {
+        // Open the file
         QString line = file.readLine();
         QStringList lineSplit = line.split(
                     QRegExp("[:]"), QString::SkipEmptyParts);
@@ -46,6 +47,7 @@ MainWindow::MainWindow(QWidget *parent)
             return;
         }
 
+        // Check the key asked (1-0a-z)
         QKeySequence idx(lineSplit[0].toLower());
         if (idx < m_firstKey || idx > m_lastKey){
             QMessageBox::critical(
@@ -53,8 +55,9 @@ MainWindow::MainWindow(QWidget *parent)
                         wrongFormat);
             return;
         }
-        lineSplit[1] = lineSplit[1].trimmed();
 
+        // Read the sound file
+        lineSplit[1] = lineSplit[1].trimmed();
         QFileInfo filePath(dir, lineSplit[1]);
         if (!filePath.exists()){
             QMessageBox::critical(
@@ -63,10 +66,13 @@ MainWindow::MainWindow(QWidget *parent)
                     + lineSplit[1] + tr("\"\ncannot be found"));
             return;
         }
+        QMediaPlayer * player = new QMediaPlayer();
+        player->setMedia(QUrl::fromLocalFile(filePath.absoluteFilePath()));
+        m_sounds[idx[0] - m_firstKey] = player;
 
+        // Make the button associated to that sound
         QPushButton * button = new QPushButton(
                     lineSplit[0].toLower() + tr(" : ") + filePath.baseName());
-
         button->connect(button,  &QPushButton::clicked, [this, idx]() {
             QKeyEvent event(
                         QEvent::KeyPress,
@@ -76,9 +82,6 @@ MainWindow::MainWindow(QWidget *parent)
         });
         m_mainLayout->addWidget(button);
 
-        QMediaPlayer * player = new QMediaPlayer();
-        player->setMedia(QUrl::fromLocalFile(filePath.absoluteFilePath()));
-        m_sounds[idx[0] - m_firstKey] = player;
     }
     m_isOkay = true;
 }

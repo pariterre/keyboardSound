@@ -26,9 +26,8 @@ MainWindow::MainWindow(QWidget *parent)
                            "with keyX being 1-0a-z"));
 
     // Read the mapping file
-//    QFileInfo filepath(
-//                QFileDialog::getOpenFileName(this, tr("Open mapping file")));
-    QFileInfo filepath("/home/pariterre/Programmation/keyboardSound/example/mapping.txt");
+    QFileInfo filepath(
+                QFileDialog::getOpenFileName(this, tr("Open mapping file")));
     QDir dir(filepath.dir());
     QFile file(filepath.filePath());
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)){
